@@ -15,5 +15,6 @@ ADebugBaseWalker::ADebugBaseWalker()
 	ConeMesh->SetStaticMesh(Cone.Object);
 	ConeMesh->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	ConeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WobbleComponent = ConeMesh;
 	
 }

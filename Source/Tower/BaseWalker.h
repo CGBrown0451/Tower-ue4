@@ -15,7 +15,7 @@
  * The Possible states a Walker can be in.
  */
 UENUM()
-enum FWalkerState {
+enum EWalkerState {
 	WalkerState_Normal,
 	WalkerState_Aiming,
 	WalkerState_Dodging,
@@ -24,6 +24,14 @@ enum FWalkerState {
 	WalkerState_Interacting,
 	WalkerState_Melee,
 	WalkerState_Dead
+};
+UENUM()
+enum ECameraState{
+	CameraState_Normal,
+	CameraState_Looking,
+	CameraState_Emphasis,
+	CameraState_Attracted,
+	CameraState_Other
 };
 /*
  * The Base Class for all characters in the game. Includes basic movement code. Recieves input from an ABasePlayerController.
@@ -42,8 +50,11 @@ public:
 	FVector2D MoveDir;
 	FVector2D AimDir;
 
+	FVector2D LaunchDir;
+	float LaunchVelocity;
+
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<FWalkerState> CurState = WalkerState_Normal;
+	TEnumAsByte<EWalkerState> CurState = WalkerState_Normal;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UDamageManager* DamageManager;
@@ -52,10 +63,13 @@ public:
 	class UInventoryManager* Inventory;
 
 	UPROPERTY()
-		USpringArmComponent* SpringArm;
+	USpringArmComponent* SpringArm;
 
 	UPROPERTY()
-		UCameraComponent* TDSCamera;
+	UCameraComponent* TDSCamera;
+
+	UPROPERTY()
+	USceneComponent* WobbleComponent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,6 +86,13 @@ public:
 	void WalkInDirection(FVector2D Direction, float DeltaTime);
 
 	void LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp);
+
+	void DoWobble();
+	void UnWobble();
+
+	bool SetState(TEnumAsByte<EWalkerState> NewState);
 	
 
 };
+
+

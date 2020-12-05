@@ -45,11 +45,13 @@ void ABaseWalker::Tick(float DeltaTime)
 	case WalkerState_Normal:
 		WalkInDirection(MoveDir, DeltaTime);
 		LookInDirection(MoveDir, DeltaTime, true);
-		
 		break;
 	case WalkerState_Aiming:
 		WalkInDirection(MoveDir, DeltaTime);
 		LookInDirection(AimDir, DeltaTime, false);
+		break;
+	case WalkerState_HitStun:
+		DoWobble();
 		break;
 
 	}
@@ -89,7 +91,18 @@ void ABaseWalker::LookInDirection(FVector2D Direction, float DeltaTime, bool Ler
 	}
 }
 
-bool ABaseWalker::SetState(TEnumAsByte<FWalkerState> NewState)
+void ABaseWalker::DoWobble()
+{
+	FVector Wobble = FVector(0.0f, FMath::Cos(GetGameTimeSinceCreation()*20) * 10.0f, 0.0f);
+	WobbleComponent->SetRelativeLocation(Wobble);
+}
+
+void ABaseWalker::UnWobble()
+{
+	WobbleComponent->SetRelativeLocation(FVector::ZeroVector);
+}
+
+bool ABaseWalker::SetState(TEnumAsByte<EWalkerState> NewState)
 {
 	CurState = NewState;
 	return true;
