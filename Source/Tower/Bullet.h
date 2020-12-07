@@ -42,6 +42,8 @@ public:
 
 	void OnConstruction(const FTransform& Transform) override;
 
+	void InitialiseObject(FTransform Transform);
+
 	FHitResult HitResult;
 
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

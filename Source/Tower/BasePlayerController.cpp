@@ -43,8 +43,19 @@ void ABasePlayerController::AimY(float mag)
 	AimDir.X = mag;
 }
 
+void ABasePlayerController::StartAim()
+{
+	bIsAiming = true;
+}
+
+void ABasePlayerController::EndAim()
+{
+	bIsAiming = false;
+}
+
 void ABasePlayerController::StartAttack()
 {
+	Walker->AttackInDirection(AimDir);
 }
 
 void ABasePlayerController::EndAttack()
@@ -54,6 +65,8 @@ void ABasePlayerController::EndAttack()
 void ABasePlayerController::DodgeInput()
 {
 }
+
+
 
 void ABasePlayerController::SetupInputComponent()
 {
@@ -66,6 +79,9 @@ void ABasePlayerController::SetupInputComponent()
 
 	InputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &ABasePlayerController::StartAttack);
 	InputComponent->BindAction(TEXT("Attack"), IE_Released, this, &ABasePlayerController::EndAttack);
+
+	InputComponent->BindAction("Aim", IE_Pressed, this, &ABasePlayerController::StartAim);
+	InputComponent->BindAction("Aim", IE_Released, this, &ABasePlayerController::EndAim);
 
 	InputComponent->BindAction(TEXT("Dodge"), IE_Pressed, this, &ABasePlayerController::DodgeInput);
 	
@@ -80,6 +96,8 @@ void ABasePlayerController::Tick(float DeltaSeconds)
 
 			FVector MousePoint = MouseLocation + MouseDirection * MoveBy;
 
+			FocusPoint = MousePoint;
+
 			Walker->AimDir = LookDirectionFromWorldPoint(MousePoint);
 
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, MousePoint.ToString());
@@ -88,9 +106,18 @@ void ABasePlayerController::Tick(float DeltaSeconds)
 	}else
 	{
 		Walker->AimDir = AimDir;
+		FocusPoint = Walker->GetActorLocation() + FVector(AimDir,0.0f) * 600.0f;
 	}
 
 	Walker->MoveDir = MoveDir;
+
+	if(bIsAiming)
+	{
+		Walker->SetWalkerState(WalkerState_Aiming);
+	}else
+	{
+		Walker->SetWalkerState(WalkerState_Normal);
+	}
 	
 }
 

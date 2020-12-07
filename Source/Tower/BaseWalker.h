@@ -17,6 +17,7 @@
 UENUM()
 enum EWalkerState {
 	WalkerState_Normal,
+	WalkerState_NormalNav,
 	WalkerState_Aiming,
 	WalkerState_Dodging,
 	WalkerState_HitStun,
@@ -45,7 +46,7 @@ public:
 	// Sets default values for this character's properties
 	ABaseWalker();
 
-	bool actionable;
+	bool bIsActionable;
 
 	FVector2D MoveDir;
 	FVector2D AimDir;
@@ -87,12 +88,14 @@ public:
 
 	void LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp);
 
+	void AttackInDirection(FVector2D Direction);
+
 	void DoWobble();
 	void UnWobble();
 
-	bool SetState(TEnumAsByte<EWalkerState> NewState);
+	bool SetWalkerState(TEnumAsByte<EWalkerState> NewState);
+
+	TEnumAsByte<EWalkerState> ResetWalkerState();
 	
 
 };
-
-

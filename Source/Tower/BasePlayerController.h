@@ -28,6 +28,9 @@ class TOWER_API ABasePlayerController : public APlayerController
 	void AimX(float mag);
 	void AimY(float mag);
 
+	void StartAim();
+	void EndAim();
+
 	void StartAttack();
 	void EndAttack();
 
@@ -35,13 +38,16 @@ class TOWER_API ABasePlayerController : public APlayerController
 
 public:
 	UPROPERTY()
-	bool IsAttacking = false;
+	bool bIsAttacking;
+	bool bIsAiming;
 
 	FVector MouseLocation;
 	FVector MouseDirection;
 
 	FVector2D MoveDir;
 	FVector2D AimDir;
+
+	FVector FocusPoint;
 	
 	void SetupInputComponent() override;
 	

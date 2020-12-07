@@ -14,6 +14,7 @@ ABullet::ABullet()
 
 	ColSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCol"));
 	ColSphere->InitSphereRadius(ColSphereRadius);
+	ColSphere->SetupAttachment(RootComponent);
 	ColSphere->BodyInstance.SetCollisionProfileName("Projectile");
 	ColSphere->OnComponentHit.AddDynamic(this, &ABullet::OnHit);
 
@@ -24,6 +25,17 @@ ABullet::ABullet()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
+	ProjectileMovement->bSweepCollision = true;
+	ProjectileMovement->bRotationRemainsVertical = true;
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> Cone(TEXT("/Engine/BasicShapes/Cone.Cone"));
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cone"));
+	Mesh->SetStaticMesh(Cone.Object);
+	Mesh->SetupAttachment(ColSphere);
+	Mesh->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetRelativeScale3D(FVector(0.5f));
 	
 
 }
@@ -32,6 +44,11 @@ void ABullet::OnConstruction(const FTransform& Transform)
 {
 	FVector position = Transform.GetLocation();
 	SetActorLocation(FVector(position.X, position.Y, 60.0f));
+}
+
+void ABullet::InitialiseObject(FTransform Transform)
+{
+	SetActorTransform(Transform);
 }
 
 

@@ -4,7 +4,6 @@
 #include "TowerGameModeBase.h"
 #include "BasePlayerController.h"
 #include "DebugBaseWalker.h"
-#include "JamesChar.h"
 
 ATowerGameModeBase::ATowerGameModeBase()
 {

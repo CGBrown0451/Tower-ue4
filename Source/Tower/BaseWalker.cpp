@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BaseWalker.h"
 #include "Components/CapsuleComponent.h"
+#include "Bullet.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -22,7 +24,8 @@ ABaseWalker::ABaseWalker()
 	TDSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	TDSCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
-	
+	GetCharacterMovement()->bCanWalkOffLedges = false;
+	GetCharacterMovement()->PerchRadiusThreshold = 60.0f;
 
 	GetCapsuleComponent()->InitCapsuleSize(60.0f, 60.0f);
 	
@@ -62,9 +65,9 @@ void ABaseWalker::Tick(float DeltaTime)
 
 void ABaseWalker::DodgeInDirection(FVector2D Direction)
 {
-	if (actionable)
+	if (bIsActionable)
 	{
-		SetState(WalkerState_Dodging);
+		SetWalkerState(WalkerState_Dodging);
 	}
 }
 
@@ -91,6 +94,16 @@ void ABaseWalker::LookInDirection(FVector2D Direction, float DeltaTime, bool Ler
 	}
 }
 
+void ABaseWalker::AttackInDirection(FVector2D Direction)
+{
+	LookInDirection(Direction, 0.0f, false);
+	FVector SpawnPoint = GetActorLocation() + GetControlRotation().Vector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+	FRotator SpawnRotation = GetControlRotation();
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(),SpawnPoint,GetControlRotation(),ActorSpawnParams);
+}
+
 void ABaseWalker::DoWobble()
 {
 	FVector Wobble = FVector(0.0f, FMath::Cos(GetGameTimeSinceCreation()*20) * 10.0f, 0.0f);
@@ -102,10 +115,22 @@ void ABaseWalker::UnWobble()
 	WobbleComponent->SetRelativeLocation(FVector::ZeroVector);
 }
 
-bool ABaseWalker::SetState(TEnumAsByte<EWalkerState> NewState)
+bool ABaseWalker::SetWalkerState(TEnumAsByte<EWalkerState> NewState)
 {
 	CurState = NewState;
 	return true;
 }
 
+TEnumAsByte<EWalkerState> ABaseWalker::ResetWalkerState()
+{
+	if(bIsActionable)
+	{
+		if (SetWalkerState(WalkerState_Normal))
+		{
+			return WalkerState_Normal;
+		}
+		
+	}
+	return WalkerState_Normal;
+}
 
