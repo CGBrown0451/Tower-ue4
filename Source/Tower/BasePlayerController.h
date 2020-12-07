@@ -15,6 +15,7 @@ UCLASS()
 class TOWER_API ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	ABasePlayerController();
 	
 	void OnPossess(APawn* InPawn) override;
 	void Tick(float DeltaSeconds) override;

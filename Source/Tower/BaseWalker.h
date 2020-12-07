@@ -9,6 +9,7 @@
 #include "InventoryManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "DamageTaker.h"
 #include "BaseWalker.generated.h"
 
 /*
@@ -38,7 +39,7 @@ enum ECameraState{
  * The Base Class for all characters in the game. Includes basic movement code. Recieves input from an ABasePlayerController.
  */
 UCLASS()
-class TOWER_API ABaseWalker : public ACharacter
+class TOWER_API ABaseWalker : public ACharacter, public IDamageTaker
 {
 	GENERATED_BODY()
 
@@ -96,6 +97,8 @@ public:
 	bool SetWalkerState(TEnumAsByte<EWalkerState> NewState);
 
 	TEnumAsByte<EWalkerState> ResetWalkerState();
+
+	void TakeDamage_Implementation() override;
 	
 
 };

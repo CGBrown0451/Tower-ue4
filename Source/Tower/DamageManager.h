@@ -4,7 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DamageTypeBase.h"
 #include "DamageManager.generated.h"
+
+USTRUCT()
+struct FDamageStats
+{
+	GENERATED_BODY()
+	AActor* Initiator;
+	float Health;
+	float ArmorPen;
+	FVector Direction;
+	TSubclassOf<UDamageTypeBase>* DamageType;
+	TArray<EDamageTags> DamageTags;
+
+};
 
 /*
  * Handles all incoming damage and health calculations. 
@@ -26,5 +40,4 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
 };

@@ -4,6 +4,7 @@
 #include "Bullet.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include <string>
+#include "DamageTaker.h"
 
 
 // Sets default values
@@ -15,8 +16,11 @@ ABullet::ABullet()
 	ColSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCol"));
 	ColSphere->InitSphereRadius(ColSphereRadius);
 	ColSphere->SetupAttachment(RootComponent);
-	ColSphere->BodyInstance.SetCollisionProfileName("Projectile");
-	ColSphere->OnComponentHit.AddDynamic(this, &ABullet::OnHit);
+	ColSphere->SetCollisionProfileName("Projectile");
+	ColSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ColSphere->SetNotifyRigidBodyCollision(true);
+	ColSphere->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
+	ColSphere->SetGenerateOverlapEvents(true);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->UpdatedComponent = ColSphere;
@@ -51,6 +55,17 @@ void ABullet::InitialiseObject(FTransform Transform)
 	SetActorTransform(Transform);
 }
 
+void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Oef");
+	IDamageTaker* dmg = Cast<IDamageTaker>(OtherActor);
+
+	if (dmg)
+	{
+		dmg->Execute_TakeDamage(OtherActor);
+	}
+}
+
 
 // Called when the game starts or when spawned
 void ABullet::BeginPlay()
@@ -66,9 +81,4 @@ void ABullet::Tick(float DeltaTime)
 	
 }
 
-void ABullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Oof"));
-	
-}
+

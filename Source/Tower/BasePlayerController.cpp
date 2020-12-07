@@ -5,12 +5,20 @@
 #include <string>
 
 
+ABasePlayerController::ABasePlayerController()
+{
+	bShowMouseCursor = true;
+	DefaultMouseCursor = EMouseCursor::Crosshairs;
+}
+
 void ABasePlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	Walker = Cast<ABaseWalker>(InPawn);
 	SetViewTargetWithBlend(Walker, 0.0f, VTBlend_Linear);
 	Walker->GetCharacterMovement()->SetActive(true, true);
+
+	
 }
 
 
@@ -100,7 +108,7 @@ void ABasePlayerController::Tick(float DeltaSeconds)
 
 			Walker->AimDir = LookDirectionFromWorldPoint(MousePoint);
 
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, MousePoint.ToString());
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, MousePoint.ToString());
 
 		}
 	}else

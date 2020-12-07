@@ -74,7 +74,7 @@ void ABaseWalker::DodgeInDirection(FVector2D Direction)
 //Moves in a direction based on input
 void ABaseWalker::WalkInDirection(FVector2D Direction, float DeltaTime)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Direction.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Direction.ToString());
 	AddMovementInput(FVector(Direction, 10), 1);
 	//FVector(Direction.X, Direction.Y, 0)
 }
@@ -132,5 +132,10 @@ TEnumAsByte<EWalkerState> ABaseWalker::ResetWalkerState()
 		
 	}
 	return WalkerState_Normal;
+}
+
+void ABaseWalker::TakeDamage_Implementation()
+{
+	
 }
 
