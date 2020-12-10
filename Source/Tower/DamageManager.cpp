@@ -32,3 +32,64 @@ void UDamageManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	// ...
 }
 
+void UDamageManager::TakeDamage(FDamageStats DamageStats)
+{
+	FDamageResult Result;
+	float DamageMult = 1.0f;
+	float* DamageMultPtr = Resistances.Find(DamageStats.DamageType);
+	if(DamageMultPtr)
+	{
+		DamageMult = *DamageMultPtr;
+	}
+	UDamageTypeBase* Type = DamageStats.DamageType.GetDefaultObject();
+
+	if (IsValid(DamageStats.Instigator))
+	{
+		DamageStats.Instigator->DealDamage(DamageStats);
+	}else
+	{
+		Result.Health = DamageStats.Damage;
+	}
+	
+	if (IsValid(Type))
+	{
+		Result = Type->CalculateDamage(DamageStats);
+	}
+	Result.Taker = this;
+	Result.Type = DamageStats.DamageType;
+	Result.Position = DamageStats.Position;
+
+	//TODO: Damage Boosters and Effects
+	
+	Health -= Result.Health;
+	if(Health <= 0.0f)
+	{
+		Result.DamageResTags.Add(DamResTag_Kill);
+		bIsAlive = false;
+	}
+
+	Armor -= Result.Armor;
+	if (Armor <= 0.0f)
+	{
+		Result.DamageResTags.Add(DamResTag_Break);
+		bIsArmored = false;
+	}
+
+	Balance -= Result.Balance;
+	if (Balance <= 0.0f)
+	{
+		Result.DamageResTags.Add(DamResTag_Launch);
+		bIsBalanced = false;
+	}
+	
+	OnTakeAnyDamage.Broadcast(Result);
+	if(IsValid(DamageStats.Instigator))
+	{
+		DamageStats.Instigator->OnDealAnyDamage.Broadcast(Result);
+	}
+}
+
+void UDamageManager::DealDamage(FDamageStats &DamageStats)
+{
+}
+

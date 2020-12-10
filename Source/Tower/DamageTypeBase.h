@@ -4,23 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/DamageType.h"
+#include "Damage.h"
 #include "DamageTypeBase.generated.h"
-
-USTRUCT(BlueprintType)
-struct FDamageResult
-{
-	GENERATED_BODY()
-	float Health;
-	float Armor;
-	float Balance;
-};
-
-UENUM()
-enum EDamageTags {
-	DamTag_Stun,
-	DamTag_Strong,
-	DamTag_Launch
-};
 
 /**
  * Includes Utility for Damage as well as an overridable function for calculating damage
@@ -30,7 +15,15 @@ class TOWER_API UDamageTypeBase : public UDamageType
 {
 	GENERATED_BODY()
 	
-	FDamageResult CalculateDamage(float Health, float ArmorPen, FVector Direction);
-	
+public:
+	UPROPERTY(BlueprintReadOnly)
+	FColor Colour;
+
+	UPROPERTY(BlueprintReadOnly)
+	float ArmorPenetration;
+
+	FDamageResult CalculateDamage(FDamageStats Damage);
+
+	FDamageResult CalculateArmorPen(float Damage, float Health, float Armor, float ArmorPen);
 };
 

@@ -71,6 +71,9 @@ public:
 	UCameraComponent* TDSCamera;
 
 	UPROPERTY()
+		UCapsuleComponent* HurtBox;
+
+	UPROPERTY()
 	USceneComponent* WobbleComponent;
 
 protected:
@@ -98,7 +101,7 @@ public:
 
 	TEnumAsByte<EWalkerState> ResetWalkerState();
 
-	void TakeDamage_Implementation() override;
+	void TakeDamage_Implementation(FDamageStats Damage) override;
 	
 
 };

@@ -13,6 +13,7 @@ ABaseWalker::ABaseWalker()
 
 	DamageManager = CreateDefaultSubobject<UDamageManager>(TEXT("Health"));
 	Inventory = CreateDefaultSubobject<UInventoryManager>(TEXT("Inventory"));
+	HurtBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HurtBox"));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring"));
 	SpringArm->SetupAttachment(RootComponent);
@@ -26,6 +27,10 @@ ABaseWalker::ABaseWalker()
 
 	GetCharacterMovement()->bCanWalkOffLedges = false;
 	GetCharacterMovement()->PerchRadiusThreshold = 60.0f;
+	
+	HurtBox->InitCapsuleSize(30.0f, 60.0f);
+	HurtBox->SetupAttachment(RootComponent);
+	HurtBox->SetCollisionProfileName("PawnHurtBox");
 
 	GetCapsuleComponent()->InitCapsuleSize(60.0f, 60.0f);
 	
@@ -97,11 +102,18 @@ void ABaseWalker::LookInDirection(FVector2D Direction, float DeltaTime, bool Ler
 void ABaseWalker::AttackInDirection(FVector2D Direction)
 {
 	LookInDirection(Direction, 0.0f, false);
-	FVector SpawnPoint = GetActorLocation() + GetControlRotation().Vector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+	FVector SpawnPoint = GetActorLocation() + GetControlRotation().Vector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.f);
 	FRotator SpawnRotation = GetControlRotation();
 	FActorSpawnParameters ActorSpawnParams;
+
+	FDamageStats Stats;
+	Stats.Damage = 10.0f;
+	Stats.Mod = 0.25f;
+	
+	
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(),SpawnPoint,GetControlRotation(),ActorSpawnParams);
+	Bullet->Stats = Stats;
 }
 
 void ABaseWalker::DoWobble()
@@ -134,8 +146,8 @@ TEnumAsByte<EWalkerState> ABaseWalker::ResetWalkerState()
 	return WalkerState_Normal;
 }
 
-void ABaseWalker::TakeDamage_Implementation()
+void ABaseWalker::TakeDamage_Implementation(FDamageStats Damage)
 {
-	
+	DamageManager->TakeDamage(Damage);
 }
 

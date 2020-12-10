@@ -7,6 +7,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/World.h"
+#include "DamageManager.h"
+#include "Damage.h"
 #include "Bullet.generated.h"
 
 /*
@@ -21,15 +23,18 @@ public:
 	// Sets default values for this actor's properties
 	ABullet();
 	UPROPERTY(EditAnywhere)
-	float Speed = 600.0f;
+	float Speed = 1600.0f;
 	float ColSphereRadius = 32.0f;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
 	UPROPERTY()
 	USphereComponent* ColSphere;
 	UPROPERTY()
 	UStaticMeshComponent* Mesh;
+
+	UPROPERTY()
+	FDamageStats Stats;
 
 	
 
@@ -49,6 +54,13 @@ public:
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
+
 };
+
+
+
+
 
 

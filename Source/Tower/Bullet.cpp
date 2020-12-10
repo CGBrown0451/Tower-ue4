@@ -18,7 +18,8 @@ ABullet::ABullet()
 	ColSphere->SetupAttachment(RootComponent);
 	ColSphere->SetCollisionProfileName("Projectile");
 	ColSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ColSphere->SetNotifyRigidBodyCollision(true);
+	ColSphere->SetNotifyRigidBodyCollision(false);
+	ColSphere->SetSimulatePhysics(false);
 	ColSphere->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
 	ColSphere->SetGenerateOverlapEvents(true);
 
@@ -28,26 +29,31 @@ ABullet::ABullet()
 	ProjectileMovement->MaxSpeed = Speed;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->Bounciness = 0.9f;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
 	ProjectileMovement->bSweepCollision = true;
 	ProjectileMovement->bRotationRemainsVertical = true;
+
+	ProjectileMovement->OnProjectileBounce.AddDynamic(this, &ABullet::OnBounce);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Cone(TEXT("/Engine/BasicShapes/Cone.Cone"));
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cone"));
 	Mesh->SetStaticMesh(Cone.Object);
 	Mesh->SetupAttachment(ColSphere);
+	Mesh->SetSimulatePhysics(false);
 	Mesh->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetRelativeScale3D(FVector(0.5f));
 	
-
+	InitialLifeSpan = 4.0f;
 }
 
 void ABullet::OnConstruction(const FTransform& Transform)
 {
 	FVector position = Transform.GetLocation();
 	SetActorLocation(FVector(position.X, position.Y, 60.0f));
+	
 }
 
 void ABullet::InitialiseObject(FTransform Transform)
@@ -57,13 +63,21 @@ void ABullet::InitialiseObject(FTransform Transform)
 
 void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Oef");
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Oef");
 	IDamageTaker* dmg = Cast<IDamageTaker>(OtherActor);
 
 	if (dmg)
 	{
-		dmg->Execute_TakeDamage(OtherActor);
+		dmg->Execute_TakeDamage(OtherActor, Stats);
 	}
+	
+	Destroy();
+}
+
+void ABullet::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Boing");
+	
 }
 
 
@@ -80,5 +94,3 @@ void ABullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 }
-
-
