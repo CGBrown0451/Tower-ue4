@@ -14,4 +14,7 @@ class TOWER_API ATowerGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	ATowerGameModeBase();
+
+	void Tick(float DeltaSeconds) override;
+
 };

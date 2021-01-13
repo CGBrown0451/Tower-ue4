@@ -2,6 +2,7 @@
 
 
 #include "DamageManager.h"
+#include <string>
 
 // Sets default values for this component's properties
 UDamageManager::UDamageManager()
@@ -34,23 +35,15 @@ void UDamageManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UDamageManager::TakeDamage(FDamageStats DamageStats)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(DamageStats.Damage));
 	FDamageResult Result;
 	float DamageMult = 1.0f;
-	float* DamageMultPtr = Resistances.Find(DamageStats.DamageType);
-	if(DamageMultPtr)
-	{
-		DamageMult = *DamageMultPtr;
-	}
 	UDamageTypeBase* Type = DamageStats.DamageType.GetDefaultObject();
 
-	if (IsValid(DamageStats.Instigator))
-	{
-		DamageStats.Instigator->DealDamage(DamageStats);
-	}else
-	{
-		Result.Health = DamageStats.Damage;
-	}
+	//TODO: DealDamage Implementation
+	Result.Health = DamageStats.Damage;
 	
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::SanitizeFloat(Result.Health));
 	if (IsValid(Type))
 	{
 		Result = Type->CalculateDamage(DamageStats);
@@ -58,29 +51,47 @@ void UDamageManager::TakeDamage(FDamageStats DamageStats)
 	Result.Taker = this;
 	Result.Type = DamageStats.DamageType;
 	Result.Position = DamageStats.Position;
-
+	Result.Direction = DamageStats.Direction;
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow,Result.Direction.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::SanitizeFloat(Result.Health));
 	//TODO: Damage Boosters and Effects
 	
-	Health -= Result.Health;
-	if(Health <= 0.0f)
+	if(Health - Result.Health <= 0.0f && bIsAlive)
 	{
 		Result.DamageResTags.Add(DamResTag_Kill);
 		bIsAlive = false;
+		OnDeath.Broadcast(Result);
+		Health = 0.0f;
+	}else
+	{
+		Health -= Result.Health;
 	}
 
-	Armor -= Result.Armor;
-	if (Armor <= 0.0f)
+	if (Armor - Result.Armor <= 0.0f && bIsArmored)
 	{
 		Result.DamageResTags.Add(DamResTag_Break);
 		bIsArmored = false;
+		OnArmorBroken.Broadcast(Result);
+		Armor = 0.0f;
+	}else
+	{
+		Armor -= Result.Armor;
 	}
 
-	Balance -= Result.Balance;
-	if (Balance <= 0.0f)
+	Armor = FMath::Clamp(Armor, 0.0f, 100.0f);
+	
+	if (Balance - Result.Balance <= 0.0f && bIsBalanced)
 	{
 		Result.DamageResTags.Add(DamResTag_Launch);
 		bIsBalanced = false;
+		OnLostBalance.Broadcast(Result);
+		Balance = 0.0f;
+	}else
+	{
+		Balance -= Result.Balance;
 	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(Result.Health));
 	
 	OnTakeAnyDamage.Broadcast(Result);
 	if(IsValid(DamageStats.Instigator))
@@ -91,5 +102,15 @@ void UDamageManager::TakeDamage(FDamageStats DamageStats)
 
 void UDamageManager::DealDamage(FDamageStats &DamageStats)
 {
+}
+
+void UDamageManager::InitializeComponent()
+{
+	if (bInitialiseFull)
+	{
+		Health = MaxHealth;
+		Armor = MaxArmor;
+		Balance = MaxBalance;
+	}
 }
 

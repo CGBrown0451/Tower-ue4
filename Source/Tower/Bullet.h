@@ -24,7 +24,12 @@ public:
 	ABullet();
 	UPROPERTY(EditAnywhere)
 	float Speed = 1600.0f;
+	UPROPERTY(EditAnywhere)
+	int NumBounces = 4;
+	UPROPERTY(EditAnywhere)
 	float ColSphereRadius = 32.0f;
+
+	bool bHasBounced = false;
 	
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
@@ -35,6 +40,9 @@ public:
 
 	UPROPERTY()
 	FDamageStats Stats;
+
+	UPROPERTY()
+	AActor* Parent;
 
 	
 
@@ -47,7 +55,7 @@ public:
 
 	void OnConstruction(const FTransform& Transform) override;
 
-	void InitialiseObject(FTransform Transform);
+	void InitialiseStats(FDamageStats DamageStats, AActor* Parent);
 
 	FHitResult HitResult;
 

@@ -47,7 +47,9 @@ public:
 	// Sets default values for this character's properties
 	ABaseWalker();
 
-	bool bIsActionable;
+	bool bIsActionable = true;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	bool bIsImmortal = false;
 
 	FVector2D MoveDir;
 	FVector2D AimDir;
@@ -57,6 +59,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EWalkerState> CurState = WalkerState_Normal;
+
+	UPROPERTY(BlueprintReadOnly)
+	TEnumAsByte<ECameraState> CurCameraState = CameraState_Normal;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UDamageManager* DamageManager;
@@ -80,6 +85,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	float HighestPriorityLook;
+
 	//void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 public:	
@@ -90,18 +97,28 @@ public:
 
 	void WalkInDirection(FVector2D Direction, float DeltaTime);
 
-	void LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp);
+	void LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp, float Priority);
 
 	void AttackInDirection(FVector2D Direction);
+
+	void ReactToDirection(FVector2D Direction);
+
+	void StunForXSeconds(float duration);
+	UFUNCTION()
+	void StopStun();
 
 	void DoWobble();
 	void UnWobble();
 
 	bool SetWalkerState(TEnumAsByte<EWalkerState> NewState);
 
+	bool SetCameraState(TEnumAsByte<ECameraState> NewState);
+	UFUNCTION()
 	TEnumAsByte<EWalkerState> ResetWalkerState();
-
+	UFUNCTION()
 	void TakeDamage_Implementation(FDamageStats Damage) override;
+	UFUNCTION()
+	void OnTakeDamage(FDamageResult Result);
 	
 
 };

@@ -56,14 +56,23 @@ void ABullet::OnConstruction(const FTransform& Transform)
 	
 }
 
-void ABullet::InitialiseObject(FTransform Transform)
+void ABullet::InitialiseStats(FDamageStats DamageStats, AActor* P)
 {
-	SetActorTransform(Transform);
+	Stats = DamageStats;
+	Parent = P;
 }
 
 void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Oef");
+	Stats.Direction = GetActorRotation().Vector();
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(GetLifeSpan()));
+	if (OtherActor == Parent)
+	{
+		if (GetLifeSpan() > 3.9f)
+		{
+			return;
+		}
+	}
 	IDamageTaker* dmg = Cast<IDamageTaker>(OtherActor);
 
 	if (dmg)
@@ -76,7 +85,16 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 
 void ABullet::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Boing");
+	NumBounces--;
+	if(NumBounces < 0)
+	{
+		Destroy();
+	}
+	float degrees = FVector::DotProduct(ImpactResult.ImpactNormal, ImpactVelocity.GetSafeNormal());
+	if (FMath::Abs(degrees) > 0.9f && !bHasBounced)
+	{
+		Destroy();
+	}
 	
 }
 

@@ -3,6 +3,8 @@
 #include "Math/Vector2D.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include <string>
+#include "GameFramework/PlayerInput.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ABasePlayerController::ABasePlayerController()
@@ -15,6 +17,7 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	Walker = Cast<ABaseWalker>(InPawn);
+	
 	SetViewTargetWithBlend(Walker, 0.0f, VTBlend_Linear);
 	Walker->GetCharacterMovement()->SetActive(true, true);
 
@@ -43,37 +46,60 @@ void ABasePlayerController::MoveY(float mag)
 
 void ABasePlayerController::AimX(float mag)
 {
-	AimDir.Y = mag;
+	if(mag != 0.0f)
+	{
+		AimDir.Y = mag;
+	}
 }
 
 void ABasePlayerController::AimY(float mag)
 {
-	AimDir.X = mag;
+	if(mag != 0.0f)
+	{
+		AimDir.X = mag;
+	}
 }
 
 void ABasePlayerController::StartAim()
 {
-	bIsAiming = true;
+	bIsAimPressed = true;
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "StartAim");
 }
 
 void ABasePlayerController::EndAim()
 {
-	bIsAiming = false;
+	bIsAimPressed = false;
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "EndAim");
 }
 
 void ABasePlayerController::StartAttack()
 {
-	Walker->AttackInDirection(AimDir);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "StartAttack");
+	Walker->AttackInDirection(Walker->AimDir);
 }
 
 void ABasePlayerController::EndAttack()
 {
+	//Negative Edge attack input, will work properly when gun system is fully implemented
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "EndAttack");
+	Walker->AttackInDirection(Walker->AimDir);
 }
 
 void ABasePlayerController::DodgeInput()
 {
+	if (Walker->SetWalkerState(WalkerState_Dodging))
+	{
+		
+	}else
+	{
+		//Buffer a Dodge
+	}
 }
 
+void ABasePlayerController::QuickRestart()
+{
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+}
 
 
 void ABasePlayerController::SetupInputComponent()
@@ -92,14 +118,17 @@ void ABasePlayerController::SetupInputComponent()
 	InputComponent->BindAction("Aim", IE_Released, this, &ABasePlayerController::EndAim);
 
 	InputComponent->BindAction(TEXT("Dodge"), IE_Pressed, this, &ABasePlayerController::DodgeInput);
+
+	InputComponent->BindAction("QuickRestart", IE_Pressed, this, &ABasePlayerController::QuickRestart);
 	
 }
 
 void ABasePlayerController::Tick(float DeltaSeconds)
 {
+	bIsAiming = false;
 	if (AimDir.Size() < 0.1f) {
-		if (DeprojectMousePositionToWorld(MouseLocation, MouseDirection))
-		{
+		
+		if (DeprojectMousePositionToWorld(MouseLocation, MouseDirection)){
 			float MoveBy = (60.0f - MouseLocation.Z) / MouseDirection.Z;
 
 			FVector MousePoint = MouseLocation + MouseDirection * MoveBy;
@@ -108,23 +137,23 @@ void ABasePlayerController::Tick(float DeltaSeconds)
 
 			Walker->AimDir = LookDirectionFromWorldPoint(MousePoint);
 
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, MousePoint.ToString());
+			bIsAiming = bIsAimPressed;
 
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, MousePoint.ToString());
 		}
-	}else
-	{
+	}else{
+		bIsAiming = true;
 		Walker->AimDir = AimDir;
 		FocusPoint = Walker->GetActorLocation() + FVector(AimDir,0.0f) * 600.0f;
 	}
-
 	Walker->MoveDir = MoveDir;
-
+	
 	if(bIsAiming)
 	{
 		Walker->SetWalkerState(WalkerState_Aiming);
 	}else
 	{
-		Walker->SetWalkerState(WalkerState_Normal);
+		Walker->ResetWalkerState();
 	}
 	
 }

@@ -17,7 +17,7 @@ class TOWER_API UDamageTypeBase : public UDamageType
 	
 public:
 	UPROPERTY(BlueprintReadOnly)
-	FColor Colour;
+	FColor Colour = FColor::Black;
 
 	UPROPERTY(BlueprintReadOnly)
 	float ArmorPenetration;

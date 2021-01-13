@@ -19,6 +19,9 @@ class TOWER_API UDamageManager : public UActorComponent
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDealAnyDamage, FDamageResult, Result);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnTakeAnyDamage, FDamageResult, Result);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDeath, FDamageResult, Result);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnArmorBroken, FDamageResult, Result);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnLostBalance, FDamageResult, Result);
 
 public:	
 	// Sets default values for this component's properties
@@ -29,19 +32,19 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(BlueprintReadWrite,VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float MaxHealth = 100.0f;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Health = MaxHealth;
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) 
 	float MaxArmor = 100.0f;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Armor = 0.0f;
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float MaxBalance = 30.0f;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Balance = MaxBalance;
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<TSubclassOf<UDamageTypeBase>, float> Resistances;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsArmored = false;
@@ -49,6 +52,8 @@ public:
 	bool bIsAlive = true;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsBalanced = true;
+	UPROPERTY(EditAnywhere)
+	bool bInitialiseFull = true;
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -59,11 +64,22 @@ public:
 
 	void DealDamage(FDamageStats &DamageStats);
 
+	void InitializeComponent() override;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnDealAnyDamage OnDealAnyDamage;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnTakeAnyDamage OnTakeAnyDamage;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDeath OnDeath;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnArmorBroken OnArmorBroken;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLostBalance OnLostBalance;
 	
 
 };

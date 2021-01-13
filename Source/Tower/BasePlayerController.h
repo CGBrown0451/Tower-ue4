@@ -37,10 +37,12 @@ class TOWER_API ABasePlayerController : public APlayerController
 
 	void DodgeInput();
 
-public:
-	UPROPERTY()
-	bool bIsAttacking;
-	bool bIsAiming;
+	void QuickRestart();
+
+	
+	bool bIsAttacking = false;
+	bool bIsAimPressed = false;
+	bool bIsAiming = false;
 
 	FVector MouseLocation;
 	FVector MouseDirection;
@@ -49,10 +51,9 @@ public:
 	FVector2D AimDir;
 
 	FVector FocusPoint;
-	
+
 	void SetupInputComponent() override;
-	
-	
-	UPROPERTY()
+
 	ABaseWalker* Walker;
+
 };

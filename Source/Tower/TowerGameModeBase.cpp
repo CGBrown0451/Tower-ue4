@@ -10,4 +10,11 @@ ATowerGameModeBase::ATowerGameModeBase()
 	//DefaultPawnClass = ADebugBaseWalker::StaticClass();
 	DefaultPawnClass = ADebugBaseWalker::StaticClass();
 	PlayerControllerClass = ABasePlayerController::StaticClass();
+	
+	
+}
+
+void ATowerGameModeBase::Tick(float DeltaSeconds)
+{
+	
 }
