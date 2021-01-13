@@ -57,6 +57,9 @@ public:
 	FVector2D LaunchDir;
 	float LaunchVelocity;
 
+	FVector2D DodgeDirection;
+	float DodgeVelocity = 100.0f;
+
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EWalkerState> CurState = WalkerState_Normal;
 
@@ -94,6 +97,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void DodgeInDirection(FVector2D Direction);
+
+	void DoDodge(float Deltatime);
 
 	void WalkInDirection(FVector2D Direction, float DeltaTime);
 

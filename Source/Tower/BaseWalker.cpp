@@ -67,6 +67,9 @@ void ABaseWalker::Tick(float DeltaTime)
 	case WalkerState_HitStun:
 		DoWobble();
 		break;
+	case WalkerState_Dodging:
+		DoDodge(DeltaTime);
+		break;
 
 	}
 	//Camera States
@@ -88,7 +91,15 @@ void ABaseWalker::DodgeInDirection(FVector2D Direction)
 	if (bIsActionable)
 	{
 		SetWalkerState(WalkerState_Dodging);
+		if(Direction.Size())
+		DodgeDirection = Direction;
 	}
+}
+
+void ABaseWalker::DoDodge(float Deltatime)
+{
+	
+	GetCharacterMovement()->AddForce(FVector(DodgeDirection * DodgeVelocity,0.0f));
 }
 
 //Moves in a direction based on input
@@ -96,7 +107,6 @@ void ABaseWalker::WalkInDirection(FVector2D Direction, float DeltaTime)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Direction.ToString());
 	AddMovementInput(FVector(Direction, 10), 1);
-	//FVector(Direction.X, Direction.Y, 0)
 }
 
 void ABaseWalker::LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp, float Priority)
@@ -148,8 +158,8 @@ void ABaseWalker::ReactToDirection(FVector2D Direction)
 	float foredir = FVector2D::DotProduct(FacingDirection, Direction * -1);
 	float aftdir = FVector2D::DotProduct(FacingDirection * -1, Direction * -1);
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, FString::SanitizeFloat(foredir), true);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, FString::SanitizeFloat(aftdir), true);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, FString::SanitizeFloat(foredir), true);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, FString::SanitizeFloat(aftdir), true);
 	if (foredir < aftdir)
 	{
 		LookInDirection(Direction, 0.0f, false, 5.0f);
@@ -206,6 +216,13 @@ bool ABaseWalker::SetWalkerState(TEnumAsByte<EWalkerState> NewState)
 	}else
 	{
 		bIsActionable = false;
+
+		if (NewState == WalkerState_Dodging)
+		{
+			GetCharacterMovement()->SetMovementMode(MOVE_Flying, 0);
+		}
+
+		
 		CurState = NewState;
 		return true;
 	}

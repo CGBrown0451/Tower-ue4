@@ -89,7 +89,7 @@ void ABasePlayerController::DodgeInput()
 {
 	if (Walker->SetWalkerState(WalkerState_Dodging))
 	{
-		
+		Walker->DodgeInDirection(MoveDir);
 	}else
 	{
 		//Buffer a Dodge
