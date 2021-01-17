@@ -13,7 +13,7 @@ UCLASS()
 class TOWER_API ADebugBaseWalker : public ABaseWalker
 {
 	GENERATED_BODY()
-	ADebugBaseWalker();
+	ADebugBaseWalker(const FObjectInitializer& ObjectInitializer);
 	UPROPERTY()
 	UStaticMeshComponent* ConeMesh;
 	

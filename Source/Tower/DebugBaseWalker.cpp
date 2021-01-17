@@ -5,7 +5,8 @@
 /*
  *The derived class of BaseWalker that is used to visualise the Character's facing direction and give an idea of it's hitbox.
  */
-ADebugBaseWalker::ADebugBaseWalker()
+ADebugBaseWalker::ADebugBaseWalker(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Cone(TEXT("/Engine/BasicShapes/Cone.Cone"));

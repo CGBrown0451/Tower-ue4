@@ -10,6 +10,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "DamageTaker.h"
+#include "MyCharacterMovementComponent.h"
+
 #include "BaseWalker.generated.h"
 
 /*
@@ -43,9 +45,16 @@ class TOWER_API ABaseWalker : public ACharacter, public IDamageTaker
 {
 	GENERATED_BODY()
 
+	
+
 public:
 	// Sets default values for this character's properties
-	ABaseWalker();
+	ABaseWalker(const FObjectInitializer& ObjectInitializer);
+
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION(BlueprintCallable, Category= "Movement")
+	FORCEINLINE class UMyCharacterMovementComponent* GetMyMovementComponent() const {return  MyCharacterMovementComponent;};
 
 	bool bIsActionable = true;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
@@ -58,7 +67,7 @@ public:
 	float LaunchVelocity;
 
 	FVector2D DodgeDirection;
-	float DodgeVelocity = 100.0f;
+	float DodgeVelocity = 500.0f;
 
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EWalkerState> CurState = WalkerState_Normal;
@@ -125,5 +134,6 @@ public:
 	UFUNCTION()
 	void OnTakeDamage(FDamageResult Result);
 	
-
+	UPROPERTY()
+	UMyCharacterMovementComponent* MyCharacterMovementComponent;
 };

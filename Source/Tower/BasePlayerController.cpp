@@ -110,7 +110,7 @@ void ABasePlayerController::SetupInputComponent()
 
 	InputComponent->BindAxis(TEXT("AimX"), this, &ABasePlayerController::AimX);
 	InputComponent->BindAxis(TEXT("AimY"), this, &ABasePlayerController::AimY);
-
+	
 	InputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &ABasePlayerController::StartAttack);
 	InputComponent->BindAction(TEXT("Attack"), IE_Released, this, &ABasePlayerController::EndAttack);
 

@@ -7,7 +7,8 @@
 
 
 // Sets default values
-ABaseWalker::ABaseWalker()
+ABaseWalker::ABaseWalker(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,13 +31,22 @@ ABaseWalker::ABaseWalker()
 
 	GetCharacterMovement()->bCanWalkOffLedges = false;
 	GetCharacterMovement()->PerchRadiusThreshold = 60.0f;
+	GetCharacterMovement()->Mass = 0.5f;
 	
 	HurtBox->InitCapsuleSize(30.0f, 60.0f);
+	HurtBox->SetMassOverrideInKg(NAME_None,0.5f,true);
 	HurtBox->SetupAttachment(RootComponent);
 	HurtBox->SetCollisionProfileName("PawnHurtBox");
 
 	GetCapsuleComponent()->InitCapsuleSize(60.0f, 60.0f);
 	
+}
+
+void ABaseWalker::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	MyCharacterMovementComponent = Cast<UMyCharacterMovementComponent>(Super::GetMovementComponent());
 }
 
 // Called when the game starts or when spawned
@@ -50,6 +60,7 @@ void ABaseWalker::BeginPlay()
 void ABaseWalker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	GEngine->AddOnScreenDebugMessage(-1,1.0f,FColor::Red,UEnum::GetValueAsString(CurState.GetValue()));
 	//Walker States
 	switch (CurState){
 
@@ -68,6 +79,7 @@ void ABaseWalker::Tick(float DeltaTime)
 		DoWobble();
 		break;
 	case WalkerState_Dodging:
+		WalkInDirection(MoveDir, DeltaTime);
 		DoDodge(DeltaTime);
 		break;
 
@@ -88,25 +100,28 @@ void ABaseWalker::Tick(float DeltaTime)
 
 void ABaseWalker::DodgeInDirection(FVector2D Direction)
 {
-	if (bIsActionable)
+	if (SetWalkerState(WalkerState_Dodging))
 	{
-		SetWalkerState(WalkerState_Dodging);
-		if(Direction.Size())
-		DodgeDirection = Direction;
+		MyCharacterMovementComponent->DoDodge(Direction);
 	}
 }
 
 void ABaseWalker::DoDodge(float Deltatime)
 {
 	
-	GetCharacterMovement()->AddForce(FVector(DodgeDirection * DodgeVelocity,0.0f));
+	if(GetMyMovementComponent()->MovementMode != MOVE_Custom)
+	{
+		bIsActionable = true;
+		GEngine->AddOnScreenDebugMessage(-1,1.0f,FColor::Green,"Dodge");
+		ResetWalkerState();
+	}
 }
 
 //Moves in a direction based on input
 void ABaseWalker::WalkInDirection(FVector2D Direction, float DeltaTime)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Direction.ToString());
-	AddMovementInput(FVector(Direction, 10), 1);
+	AddMovementInput(FVector(Direction, 0.0f), 1);
 }
 
 void ABaseWalker::LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp, float Priority)
@@ -219,7 +234,7 @@ bool ABaseWalker::SetWalkerState(TEnumAsByte<EWalkerState> NewState)
 
 		if (NewState == WalkerState_Dodging)
 		{
-			GetCharacterMovement()->SetMovementMode(MOVE_Flying, 0);
+			
 		}
 
 		

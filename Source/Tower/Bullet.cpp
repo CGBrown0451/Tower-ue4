@@ -15,7 +15,7 @@ ABullet::ABullet()
 
 	ColSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCol"));
 	ColSphere->InitSphereRadius(ColSphereRadius);
-	ColSphere->SetupAttachment(RootComponent);
+	SetRootComponent(ColSphere);
 	ColSphere->SetCollisionProfileName("Projectile");
 	ColSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ColSphere->SetNotifyRigidBodyCollision(false);
