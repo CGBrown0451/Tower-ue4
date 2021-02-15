@@ -42,8 +42,8 @@ struct FDamageResult
 		float Armor;
 	UPROPERTY(BlueprintReadWrite)
 		float Balance;
-	UPROPERTY(BlueprintReadWrite)
-		TSubclassOf<UDamageTypeBase> Type;
+	UPROPERTY(BlueprintReadOnly)
+		UDamageTypeBase* Type;
 	UPROPERTY(BlueprintReadWrite)
 		FVector Position;
 	UPROPERTY(BlueprintReadWrite)
@@ -65,7 +65,8 @@ struct FDamageStats
 	float Mod;
 	FVector Direction;
 	FVector Position;
-	TSubclassOf<UDamageTypeBase> DamageType;
+	TSubclassOf<UDamageTypeBase> DefType;
+	UDamageTypeBase* DamageType;
 	TArray<EDamageTags> DamageTags;
 
 };

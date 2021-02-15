@@ -18,6 +18,7 @@ ABaseWalker::ABaseWalker(const FObjectInitializer& ObjectInitializer)
 	HurtBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HurtBox"));
 
 	DamageManager->OnTakeAnyDamage.AddDynamic(this,&ABaseWalker::OnTakeDamage);
+	DamageManager->OnDeath.AddDynamic(this,&ABaseWalker::OnDeath);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring"));
 	SpringArm->SetupAttachment(RootComponent);
@@ -28,10 +29,6 @@ ABaseWalker::ABaseWalker(const FObjectInitializer& ObjectInitializer)
 
 	TDSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	TDSCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-
-	GetCharacterMovement()->bCanWalkOffLedges = false;
-	GetCharacterMovement()->PerchRadiusThreshold = 60.0f;
-	GetCharacterMovement()->Mass = 0.5f;
 	
 	HurtBox->InitCapsuleSize(30.0f, 60.0f);
 	HurtBox->SetMassOverrideInKg(NAME_None,0.5f,true);
@@ -60,217 +57,37 @@ void ABaseWalker::BeginPlay()
 void ABaseWalker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	GEngine->AddOnScreenDebugMessage(-1,1.0f,FColor::Red,UEnum::GetValueAsString(CurState.GetValue()));
-	//Walker States
-	switch (CurState){
-
-	case WalkerState_Normal:
-		WalkInDirection(MoveDir, DeltaTime);
-		if (MoveDir.Size() > 0.1f) 
-		{
-			LookInDirection(MoveDir, DeltaTime, true, 1.0f);
-		}
-		break;
-	case WalkerState_Aiming:
-		WalkInDirection(MoveDir, DeltaTime);
-		LookInDirection(AimDir, DeltaTime, false, 1.0f);
-		break;
-	case WalkerState_HitStun:
-		DoWobble();
-		break;
-	case WalkerState_Dodging:
-		WalkInDirection(MoveDir, DeltaTime);
-		DoDodge(DeltaTime);
-		break;
-
-	}
-	//Camera States
-	switch(CurCameraState)
-	{
-	case CameraState_Normal:
-		break;
-	case CameraState_Looking:
-		break;
-	}
-
-	HighestPriorityLook = 0.0f;
+	//GEngine->AddOnScreenDebugMessage(-1,1.0f,FColor::Red,UEnum::GetValueAsString(CurState.GetValue()));
 }
 
 
 
 void ABaseWalker::DodgeInDirection(FVector2D Direction)
 {
-	if (SetWalkerState(WalkerState_Dodging))
-	{
-		MyCharacterMovementComponent->DoDodge(Direction);
-	}
+	MyCharacterMovementComponent->DoDodge(Direction);
 }
 
-void ABaseWalker::DoDodge(float Deltatime)
+void ABaseWalker::Attack(FVector Direction)
 {
-	
-	if(GetMyMovementComponent()->MovementMode != MOVE_Custom)
-	{
-		bIsActionable = true;
-		GEngine->AddOnScreenDebugMessage(-1,1.0f,FColor::Green,"Dodge");
-		ResetWalkerState();
-	}
-}
-
-//Moves in a direction based on input
-void ABaseWalker::WalkInDirection(FVector2D Direction, float DeltaTime)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Direction.ToString());
-	AddMovementInput(FVector(Direction, 0.0f), 1);
-}
-
-void ABaseWalker::LookInDirection(FVector2D Direction, float DeltaTime, bool Lerp, float Priority)
-{
-	if (Priority < HighestPriorityLook)
-	{
-		return;
-	}
-	HighestPriorityLook = Priority;
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Emerald, FString::SanitizeFloat(Priority));
-		if (Lerp)
-		{
-			GetController()->SetControlRotation(FMath::RInterpTo(GetControlRotation(), FVector(Direction, 0.0f).Rotation(), DeltaTime, 10.0f * Direction.Size()));
-		}
-		else
-		{
-			GetController()->SetControlRotation(FVector(Direction, 0.0f).Rotation());
-		}
-}
-
-void ABaseWalker::AttackInDirection(FVector2D Direction)
-{
-	if (bIsActionable) {
-		LookInDirection(Direction, 0.0f, false, 2.0f);
-		FVector SpawnPoint = GetActorLocation() + GetControlRotation().Vector() * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.5f);
-		FRotator SpawnRotation = GetControlRotation();
+	if (GetMyMovementComponent()->bIsActionable) {
+		FVector SpawnPoint = GetActorLocation() + Direction * (GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.5f);
+		FRotator SpawnRotation = Direction.Rotation();
 		FActorSpawnParameters ActorSpawnParams;
 
 		FDamageStats Stats;
 		Stats.Instigator = DamageManager;
 		Stats.Damage = 10.0f;
 		Stats.Mod = 0.25f;
-		Stats.DamageType = UDamageTypeBase::StaticClass();
+		Stats.DefType = UDamageTypeBase::StaticClass();
 
 
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), SpawnPoint, GetControlRotation(), ActorSpawnParams);
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+		ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), SpawnPoint, SpawnRotation, ActorSpawnParams);
 		if (IsValid(Bullet))
 		{
 			Bullet->InitialiseStats(Stats, this);
 		}
 	}
-}
-
-void ABaseWalker::ReactToDirection(FVector2D Direction)
-{
-	FVector RecievedDirection = GetControlRotation().Vector();
-	FVector2D FacingDirection = FVector2D(RecievedDirection.X,RecievedDirection.Y);
-	float foredir = FVector2D::DotProduct(FacingDirection, Direction * -1);
-	float aftdir = FVector2D::DotProduct(FacingDirection * -1, Direction * -1);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, FString::SanitizeFloat(foredir), true);
-	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, FString::SanitizeFloat(aftdir), true);
-	if (foredir < aftdir)
-	{
-		LookInDirection(Direction, 0.0f, false, 5.0f);
-	}else
-	{
-		LookInDirection(Direction * -1, 0.0f, false, 5.0f);
-	}
-}
-
-void ABaseWalker::StunForXSeconds(float duration)
-{
-	FTimerHandle Handle;
-	GetWorldTimerManager().SetTimer(Handle, this, &ABaseWalker::StopStun, duration);
-	SetWalkerState(WalkerState_HitStun);
-}
-
-void ABaseWalker::StopStun()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "Reset", true);
-	UnWobble();
-	bIsActionable = true;
-	ResetWalkerState();
-}
-
-void ABaseWalker::DoWobble()
-{
-	FVector Wobble = FVector(0.0f, FMath::Cos(GetGameTimeSinceCreation()*20) * 10.0f, 0.0f);
-	if (IsValid(WobbleComponent))
-	{
-		WobbleComponent->SetRelativeLocation(Wobble);
-	}
-}
-
-void ABaseWalker::UnWobble()
-{
-	if (IsValid(WobbleComponent))
-	{
-		WobbleComponent->SetRelativeLocation(FVector::ZeroVector);
-	}
-}
-
-bool ABaseWalker::SetWalkerState(TEnumAsByte<EWalkerState> NewState)
-{
-	if (NewState == WalkerState_Normal || NewState == WalkerState_Aiming || NewState == WalkerState_NormalNav)
-	{
-		if (bIsActionable)
-		{
-			CurState = NewState;
-			return true;
-		}else
-		{
-			return false;
-		}
-	}else
-	{
-		bIsActionable = false;
-
-		if (NewState == WalkerState_Dodging)
-		{
-			
-		}
-
-		
-		CurState = NewState;
-		return true;
-	}
-}
-
-bool ABaseWalker::SetCameraState(TEnumAsByte<ECameraState> NewState)
-{
-	CurCameraState = NewState;
-	return true;
-}
-
-TEnumAsByte<EWalkerState> ABaseWalker::ResetWalkerState()
-{
-	
-	if (DamageManager->Balance <= 0.0f)
-	{
-		return WalkerState_Launched;
-	}
-	
-	if(bIsActionable)
-	{
-		if (DamageManager->Health <= 0.0f)
-		{
-			return WalkerState_Dead;
-		}
-		
-		if (SetWalkerState(WalkerState_Normal))
-		{
-			return WalkerState_Normal;
-		}
-		
-	}
-	return WalkerState_Normal;
 }
 
 void ABaseWalker::TakeDamage_Implementation(FDamageStats Damage)
@@ -280,6 +97,28 @@ void ABaseWalker::TakeDamage_Implementation(FDamageStats Damage)
 
 void ABaseWalker::OnTakeDamage(FDamageResult Result)
 {
-	StunForXSeconds(.5f);
-	ReactToDirection(FVector2D(Result.Direction.X,Result.Direction.Y));
+	LaunchDir = Result.Direction;
+	LaunchVelocity += Result.LaunchSpeed;
+	for(int i = 0; i<Result.DamageResTags.Num(); i++)
+	{
+		EDamageResultTags ResultTag = Result.DamageResTags[i];
+		switch(ResultTag)
+		{
+			case EDamageResultTags::DamResTag_Kill:
+				GetMyMovementComponent()->Launch(LaunchDir * LaunchVelocity);
+			break;
+			case EDamageResultTags::DamResTag_Launch:
+				GetMyMovementComponent()->Launch(LaunchDir * LaunchVelocity);
+			break;
+			case EDamageResultTags::DamResTag_Stun:
+				GetMyMovementComponent()->Stun(1.0f);
+			break;
+		}
+	}
+}
+
+void ABaseWalker::OnDeath(FDamageResult Result)
+{
+	GetMyMovementComponent()->bIsDead = true;
+	GetMyMovementComponent()->Launch(LaunchDir * LaunchVelocity);
 }

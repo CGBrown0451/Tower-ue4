@@ -21,7 +21,7 @@ class TOWER_API ABasePlayerController : public APlayerController
 	void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-	FVector2D LookDirectionFromWorldPoint(FVector WorldPoint);
+	FVector LookDirectionFromWorldPoint(FVector WorldPoint);
 
 	void MoveX(float mag);
 	void MoveY(float mag);
@@ -32,8 +32,18 @@ class TOWER_API ABasePlayerController : public APlayerController
 	void StartAim();
 	void EndAim();
 
+	void Aim();
+
+	/*
+	 *Uses Input to determine the point where a controlled walker should look
+	 *@return: Either a Normalised Vector or a point in the world, and a bool saying whether it is the former.
+	 */
+	TPair<FVector,bool> DetermineLookVector();
+
 	void StartAttack();
 	void EndAttack();
+
+	void DoAttack();
 
 	void DodgeInput();
 
@@ -41,8 +51,6 @@ class TOWER_API ABasePlayerController : public APlayerController
 
 	
 	bool bIsAttacking = false;
-	bool bIsAimPressed = false;
-	bool bIsAiming = false;
 
 	FVector MouseLocation;
 	FVector MouseDirection;
@@ -51,6 +59,9 @@ class TOWER_API ABasePlayerController : public APlayerController
 	FVector2D AimDir;
 
 	FVector FocusPoint;
+
+	bool bHasShot;
+	bool bIsAiming;
 
 	void SetupInputComponent() override;
 

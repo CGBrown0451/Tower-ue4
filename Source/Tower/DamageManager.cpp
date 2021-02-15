@@ -35,16 +35,28 @@ void UDamageManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UDamageManager::TakeDamage(FDamageStats DamageStats)
 {
+	//Check for valid Damage Type class
+	if(!DamageStats.DamageType)
+	{
+		if(DamageStats.DefType)
+		{
+			DamageStats.DamageType = Cast<UDamageTypeBase>(DamageStats.DefType.GetDefaultObject());
+		}else
+		{
+			//No usable DamageType Class exists, exiting
+			return;
+		}
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(DamageStats.Damage));
 	FDamageResult Result;
 	float DamageMult = 1.0f;
-	UDamageTypeBase* Type = DamageStats.DamageType.GetDefaultObject();
+	UDamageTypeBase* Type = DamageStats.DamageType;
 
 	//TODO: DealDamage Implementation
 	Result.Health = DamageStats.Damage;
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::SanitizeFloat(Result.Health));
-	if (IsValid(Type))
+	if (Type)
 	{
 		Result = Type->CalculateDamage(DamageStats);
 	}
@@ -94,10 +106,12 @@ void UDamageManager::TakeDamage(FDamageStats DamageStats)
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(Result.Health));
 	
 	OnTakeAnyDamage.Broadcast(Result);
-	if(IsValid(DamageStats.Instigator))
+	/*
+	if(DamageStats.Instigator)
 	{
 		DamageStats.Instigator->OnDealAnyDamage.Broadcast(Result);
 	}
+	*/
 }
 
 void UDamageManager::DealDamage(FDamageStats &DamageStats)

@@ -16,7 +16,7 @@ class TOWER_API ATowerGameState : public AGameState
 	GENERATED_BODY()
 public:
 	UPROPERTY()
-	TEnumAsByte<Tower_GameState> GameState;
+	TEnumAsByte<Tower_GameState> GameState = Tower_GameState::GameState_PreGame;
 
 	UPROPERTY(BlueprintReadOnly)
 	float GameTime;
@@ -25,10 +25,19 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void StartGame();
-	
+
 	UFUNCTION(BlueprintCallable)
-	void EndGame();
-	
+	void TogglePause();
+
+	UFUNCTION(BlueprintCallable)
+	void SetGameState(Tower_GameState NewState);
+
+	UFUNCTION(BlueprintCallable)
+	void EndGame(bool HasWon, int Mode);
+
 	void Tick(float DeltaSeconds) override;
+
+	bool bIsPaused;
+	bool bHasStarted;
 	
 };

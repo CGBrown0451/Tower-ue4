@@ -3,22 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Components/Widget.h"
 #include "GameFramework/GameMode.h"
 #include "TowerGameMode.generated.h"
 
 UENUM(BlueprintType)
 enum Tower_GameState {
 	GameState_PreGame,
+	GameState_Paused,
 	GameState_InGame,
 	GameState_PostGame
-};
-
-UENUM(BlueprintType)
-enum Tower_HUDElements{
-	HUD_HealthAndArmor,
-	HUD_Timer,
-	HUD_AmmoCounter,
-	HUD_ScoreCounter
 };
 
 /**
@@ -31,6 +26,6 @@ class TOWER_API ATowerGameMode : public AGameMode
 	ATowerGameMode();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TEnumAsByte<Tower_HUDElements>> HUDElements;
+	TArray<TSubclassOf<UWidget>> HUDElements;
 	
 };

@@ -10,6 +10,7 @@
 ABasePlayerController::ABasePlayerController()
 {
 	bShowMouseCursor = true;
+	bBlockInput = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
 }
 
@@ -26,12 +27,12 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 
 
 
-FVector2D ABasePlayerController::LookDirectionFromWorldPoint(FVector WorldPoint)
+FVector ABasePlayerController::LookDirectionFromWorldPoint(FVector WorldPoint)
 {
 	WorldPoint.Z = 60.0f;
 	FVector point = WorldPoint - Walker->GetActorLocation();
 	point.Normalize();
-	return FVector2D(point.X, point.Y);
+	return point;
 }
 
 void ABasePlayerController::MoveX(float mag)
@@ -46,53 +47,107 @@ void ABasePlayerController::MoveY(float mag)
 
 void ABasePlayerController::AimX(float mag)
 {
-	if(mag != 0.0f)
-	{
-		AimDir.Y = mag;
-	}
+	AimDir.Y = mag;
 }
 
 void ABasePlayerController::AimY(float mag)
 {
-	if(mag != 0.0f)
-	{
-		AimDir.X = mag;
-	}
+	AimDir.X = mag;
 }
 
 void ABasePlayerController::StartAim()
 {
-	bIsAimPressed = true;
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "StartAim");
+	bIsAiming = true;
 }
 
 void ABasePlayerController::EndAim()
 {
-	bIsAimPressed = false;
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "EndAim");
+	bIsAiming = false;
 }
+
+void ABasePlayerController::Aim()
+{
+	TPair<FVector,bool> Look = DetermineLookVector();
+	if(Look.Value)
+	{
+		Walker->GetMyMovementComponent()->LookInDirection(Look.Key,0.0f);
+	}else
+	{
+		Walker->GetMyMovementComponent()->LookAtPoint(Look.Key,0.0f);
+	}
+}
+
+TPair<FVector,bool> ABasePlayerController::DetermineLookVector()
+{
+	TPair<FVector,bool> returnvalue;
+	if (AimDir.Size() > 0.1f)
+	{
+		returnvalue.Key = FVector(AimDir,0.0f);
+		returnvalue.Value = true;
+		return returnvalue;
+	}
+	
+	if (DeprojectMousePositionToWorld(MouseLocation, MouseDirection))
+	{
+		float MoveBy = (60.0f - MouseLocation.Z) / MouseDirection.Z;
+
+		FVector MousePoint = MouseLocation + MouseDirection * MoveBy;
+
+		FocusPoint = MousePoint;
+
+		returnvalue.Key = MousePoint;
+		returnvalue.Value = false;
+		return returnvalue;
+	}
+
+	returnvalue.Key = FVector(MoveDir,0.0f);
+	returnvalue.Value = true;
+	return returnvalue;
+	
+}
+
 
 void ABasePlayerController::StartAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "StartAttack");
-	Walker->AttackInDirection(Walker->AimDir);
+	bHasShot = true;
+	DoAttack();
 }
 
 void ABasePlayerController::EndAttack()
 {
-	//Negative Edge attack input, will work properly when gun system is fully implemented
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "EndAttack");
-	Walker->AttackInDirection(Walker->AimDir);
+	if(!bHasShot)
+	{
+		DoAttack();
+	}else
+	{
+		bHasShot = false;
+	}
+}
+
+void ABasePlayerController::DoAttack()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "EndAttack");
+	TPair<FVector,bool> Look = DetermineLookVector();
+	if(Look.Value)
+	{
+		Walker->GetMyMovementComponent()->LookInDirection(Look.Key,1.0f);
+		Walker->Attack(Look.Key);
+	}else
+	{
+		Walker->GetMyMovementComponent()->LookAtPoint(Look.Key,1.0f);
+		
+		FVector LookVector = Look.Key - Walker->GetActorLocation();
+		LookVector.Normalize();
+		
+		Walker->Attack(LookVector);
+	}
 }
 
 void ABasePlayerController::DodgeInput()
 {
-	if (Walker->SetWalkerState(WalkerState_Dodging))
+	if (!Walker->GetMyMovementComponent()->DoDodge(MoveDir))
 	{
-		Walker->DodgeInDirection(MoveDir);
-	}else
-	{
-		//Buffer a Dodge
+		//TODO: Buffer a Dodge
 	}
 }
 
@@ -125,37 +180,11 @@ void ABasePlayerController::SetupInputComponent()
 
 void ABasePlayerController::Tick(float DeltaSeconds)
 {
-	bIsAiming = false;
-	if (AimDir.Size() < 0.1f) {
-		
-		if (DeprojectMousePositionToWorld(MouseLocation, MouseDirection)){
-			float MoveBy = (60.0f - MouseLocation.Z) / MouseDirection.Z;
-
-			FVector MousePoint = MouseLocation + MouseDirection * MoveBy;
-
-			FocusPoint = MousePoint;
-
-			Walker->AimDir = LookDirectionFromWorldPoint(MousePoint);
-
-			bIsAiming = bIsAimPressed;
-
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, MousePoint.ToString());
-		}
-	}else{
-		bIsAiming = true;
-		Walker->AimDir = AimDir;
-		FocusPoint = Walker->GetActorLocation() + FVector(AimDir,0.0f) * 600.0f;
-	}
-	Walker->MoveDir = MoveDir;
-	
-	if(bIsAiming)
+	if(AimDir.Size() > 0.1f || bIsAiming)
 	{
-		Walker->SetWalkerState(WalkerState_Aiming);
-	}else
-	{
-		Walker->ResetWalkerState();
+		Aim();
 	}
-	
+	Walker->AddMovementInput(FVector(MoveDir,0.0f),1.0f);
 }
 
 

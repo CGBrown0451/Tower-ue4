@@ -78,9 +78,9 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	if (dmg)
 	{
 		dmg->Execute_TakeDamage(OtherActor, Stats);
+		Destroy();
 	}
 	
-	Destroy();
 }
 
 void ABullet::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
