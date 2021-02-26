@@ -5,67 +5,7 @@
     <projectFile>Intermediate/ProjectFiles/UE4.vcxproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d052b88-3183-4055-ac2d-a9f5f2454fb6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Content/AI/AIControllers/BP_DefaultAI.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/AI/BP_BaseWalker_AI.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/AI/BehaviourTree/BB_DefaultAI.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/AI/BehaviourTree/BTTask_BlueprintBase_New.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/AI/BehaviourTree/BT_DefaultAi.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/AI/Scripts/BP_Patrol.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/AI/Scripts/Struct_PatrolPoint.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/ABP_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Alpha_Body_MAT.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Alpha_Joints_MAT.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Anim_Aiming_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Anim_DieIdle_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Anim_Dodge_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Anim_Run_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Anim_Shoot_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Anim_Walk_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/BS_WalkRun_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/BS_Wallrun_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Dying_Backwards_mixamo_com.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/MDL_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/PHY_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Pose_Aiming_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/SKEL_Test.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Character/Test/Stand_To_Roll_Anim_mixamo_com.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/MyTowerGameMode.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Texture/Environment/CheckTile.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/Texture/Environment/CheckTile_Mat.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/Tower/MyPainCausingVolume.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/Tower/MyPainCausingVolume.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Tower/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Tower/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Tower/.idea/riderModule.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Tower/.idea/riderModule.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Tower/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Tower/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEditor.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEditor.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultInput.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultInput.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GameMode/HUDClass.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GameMode/Trial/GameStateTest.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GameMode/Trial/GameStateTest.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Levels/Camp_TargetPractice.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Levels/Camp_TargetPractice.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Levels/MainMenu.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Levels/MainMenu.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Levels/TargetPractice/TargetPractice1.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Levels/TargetPractice/TargetPractice1.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Levels/TargetPractice/TargetPractice1_BuiltData.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Levels/TargetPractice/TargetPractice1_BuiltData.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Levels/TargetPractice/TargetPractice2.umap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/MyBaseWalker.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MyBaseWalker.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Shaders/Bullet.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Shaders/Bullet.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Game/HUD/WID_HealthandArmour.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Game/HUD/WID_HealthandArmour.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/BasePlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/BasePlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/BasePlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/BasePlayerController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/BaseWalker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/BaseWalker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/BaseWalker.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/BaseWalker.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/Bullet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/Bullet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/Damage.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/Damage.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/DamageManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/DamageManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/MyCharacterMovementComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/MyCharacterMovementComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/MyCharacterMovementComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/MyCharacterMovementComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/Tower.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/Tower.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/TowerGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/TowerGameMode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/TowerGameState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/TowerGameState.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Tower/TowerGameState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Tower/TowerGameState.h" afterDir="false" />
-    </list>
+    <list default="true" id="5d052b88-3183-4055-ac2d-a9f5f2454fb6" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -73,14 +13,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/../../UE_4.26/Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../UE_4.26/Engine/Source/Runtime/Engine/Private/Components/ActorComponent.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../UE_4.26/Engine/Source/Runtime/Engine/Private/Components/CharacterMovementComponent.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../UE_4.26/Engine/Source/Runtime/Engine/Private/PainCausingVolume.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../UE_4.26/Engine/Source/Runtime/Engine/Classes/GameFramework/PainCausingVolume.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../UE_4.26/Engine/Source/Runtime/Engine/Private/GameplayStatics.cpp" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
@@ -370,6 +302,7 @@
       <workItem from="1612889092442" duration="3551000" />
       <workItem from="1612971368232" duration="3737000" />
       <workItem from="1613139350699" duration="4139000" />
+      <workItem from="1613999575705" duration="644000" />
     </task>
     <task id="LOCAL-00001" summary="Added in Dodge move in custom Character Movement Component. Planning on moving most movement functions over to the Character Movement component, including looking and aiming, so they aren't so spread out between BasePlayerController, BaseWalker and MyCharacterMovementComponent">
       <created>1610916728343</created>
